@@ -1,0 +1,33 @@
+{
+    "port": "3333",
+    "mode": "debug",
+    "maxPingCount": 10,
+	"jwt": {
+		"secret": "",
+		"maxage": 7200
+	},
+    "publicPrefix": "/public",
+    "log": {
+        "logger_file": "log/weshier.log",
+        "log_rotate_date": 14,
+        "log_rotate_size": 10,
+        "log_backup_count": 10
+    },
+    "upload": {
+        "saveDir": "/public/upload"
+    },
+    "mysql": {
+        "dbname": "weshier@next",
+        "addr": "127.0.0.1:3306",
+        "username": "",
+        "password": ""
+	},
+    "redis": {
+        "addr": "127.0.0.1:6379"
+	},
+	"admin": {
+		"username": "admin",
+		"password": "admin",
+		"email": "lw_ervin@sina.cn"
+	}
+}
