@@ -16,7 +16,8 @@ var (
 	// user error
 	ErrEncrypt           = &Errno{Code: 20101, Message: "Error occurred while encrypting the user password."}
 	ErrUserNotFound      = &Errno{Code: 20102, Message: "The user not found."}
-	ErrTokenInvalid      = &Errno{Code: 20103, Message: "The token was invalid."}
-	ErrTokenExpired      = &Errno{Code: 20104, Message: "The token was expired."}
+	ErrTokenEmpty        = &Errno{Code: 20103, Message: "The token is empty."}
+	ErrTokenInvalid      = &Errno{Code: 20103, Message: "The token is invalid."}
+	ErrTokenExpired      = &Errno{Code: 20104, Message: "The token is expired."}
 	ErrPasswordIncorrect = &Errno{Code: 20105, Message: "The password was incorrect."}
 )

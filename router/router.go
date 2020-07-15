@@ -39,6 +39,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		}
 		userGroup := api.Group("/user")
 		{
+			userGroup.GET("/", user.QueryUserInfo)
 			userGroup.POST("/login", user.Login)
 			userGroup.POST("/register", user.Register)
 		}

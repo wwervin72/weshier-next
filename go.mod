@@ -15,6 +15,7 @@ require (
 	github.com/gomodule/redigo/redis v0.0.0-20200429221454-e14091dffc1b
 	github.com/jinzhu/gorm v1.9.14
 	github.com/lexkong/log v0.0.0-20180607165131-972f9cd951fc
+	github.com/micro/go-micro/v2 v2.9.1 // indirect
 	github.com/onsi/ginkgo v1.12.0 // indirect
 	github.com/onsi/gomega v1.9.0 // indirect
 	github.com/satori/go.uuid v1.2.0
@@ -25,7 +26,7 @@ require (
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/willf/pad v0.0.0-20200313202418-172aa767f2a4
 	go.uber.org/zap v1.15.0
-	golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
+	golang.org/x/crypto v0.0.0-20200510223506-06a226fb4e37
 	gopkg.in/go-playground/validator.v9 v9.31.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )
