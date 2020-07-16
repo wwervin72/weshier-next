@@ -15,6 +15,7 @@ export default class Layout extends Component {
 					<Route exact path="/" component={Home}></Route>
 					<Route path='/admin' component={Admin}></Route>
 					<Route path="/blog/:blogId" component={Blog}></Route>
+					<Redirect from="*" to="/404"></Redirect>
 				</Switch>
 				<AppFooter></AppFooter>
 			</Fragment>
