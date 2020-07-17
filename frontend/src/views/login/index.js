@@ -9,12 +9,15 @@ const layout = {
 	wrapperCol: { offset: 8, span: 16 },
   };
 
+// @Form.create({
+// 	onFieldsChange(props, items) {},
+// })
 export default class Login extends Component {
 	formRef = React.createRef()
 	render () {
 		return (
 			<Form {...layout} ref={this.formRef} name="login-form">
-				<Form.Item name="username" label="账号" rules={[{required: true, message: '请输入登录账号', validateTrigger: 'blur'}]}>
+				<Form.Item name="username" label="账号" rules={[{required: true, message: '请输入登录账号'}]}>
 					<Input type="text"></Input>
 				</Form.Item>
 				<Form.Item name="password" label="密码" rules={[{required: true, message: '请输入登录密码'}]}>

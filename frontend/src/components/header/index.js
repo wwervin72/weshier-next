@@ -1,14 +1,21 @@
 import React, {Component} from 'react'
+import {connect} from 'react-redux'
+import {withRouter} from 'react-router-dom'
 import {Button} from 'antd'
 
-export default class Header extends Component {
+@connect((state, props) => ({
+}))
+@withRouter
+class Header extends Component {
 	render () {
+		const {history} = this.props
 		return (
 			<header>
-				<Button onClick={(e) => {
-
-				}}></Button>
+				<Button type='primary' onClick={(e) => {
+					history.push('/login')
+				}}>登录</Button>
 			</header>
 		)
 	}
 }
+export default Header
