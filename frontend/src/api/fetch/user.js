@@ -16,7 +16,7 @@ export function login(data) {
 /**
  * 登出
  */
-export function login() {
+export function logout() {
 	return fetch({
 		url: logoutURL,
 	})

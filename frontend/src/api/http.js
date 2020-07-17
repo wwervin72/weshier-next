@@ -12,7 +12,7 @@ const instance = axios.create({
 	validateStatus: function (status) {
 		return status >= 200 && status <= 510;
 	},
-	withCredentials: true
+	withCredentials: false
 });
 
 // 错误信息转换
