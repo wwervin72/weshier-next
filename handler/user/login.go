@@ -86,7 +86,7 @@ func GithubLogin(c *gin.Context) {
 	client := &http.Client{}
 	// 创建新的 http request，自定义 Header
 	request, err := http.NewRequest("GET", fmt.Sprintf("https://github.com/login/oauth/access_token?client_id=%s&client_secret=%s&code=%s&redirect_uri=%s",
-		"90189950634776bd6a86", "8c724997ce2685ea372dfba9e971778ddf2971aa", code, "http://localhost:3333/api/user/auth/github/callback"), nil)
+		viper.GetString("github.client_id"), viper.GetString("github.client_secret"), code, viper.GetString("github.redirect_url")), nil)
 	// 设置 accept-type
 	request.Header.Add("accept", "application/json")
 	if err != nil {

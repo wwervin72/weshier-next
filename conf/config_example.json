@@ -29,5 +29,10 @@
 		"username": "admin",
 		"password": "admin",
 		"email": "lw_ervin@sina.cn"
+	},
+	"github": {
+		"redirect_url": "",
+		"client_id": "",
+		"client_secret": ""
 	}
 }
