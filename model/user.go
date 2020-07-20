@@ -17,6 +17,14 @@ type UserModel struct {
 	Password string `zh:"密码" json:"password" gorm:"not null" binding:"required" validate:"min=5,max=50"`
 	Email    string `zh:"邮箱" json:"email" gorm:"not null" binding:"required" validate:"email"`
 	Nickname string `zh:"昵称" json:"nickname" validate:"max=24"`
+	Bio      string `zh:"简介" json:"bio"`
+	Avatar   string `zh:"头像" json:"avatar"`
+	URL      string `zh:"头像" json:"url"`
+	Phone    uint64 `zh:"手机号" json:"phone"`
+	Role     uint8  `zh:"角色" json:"role"`
+	Age      uint8  `zh:"年龄" json:"age"`
+	Status   uint8  `zh:"年龄" json:"status"`
+	Resume   uint8  `zh:"年龄" json:"resume"`
 }
 
 // TableName specified table name

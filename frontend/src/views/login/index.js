@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import {Form, Input, Button} from 'antd'
 // import {PoweroffOutlined} from '@ant-design/icons'
 import {login} from '../../api/fetch/user'
+import {GITHUB_OAUTH_URI, GITHUB_REDIRECT_URI, GITHUB_CLIENT_ID} from '../../utils/variables'
 
 const layout = {
 	labelCol: { span: 8 },
@@ -19,6 +20,7 @@ export default class Login extends Component {
 	constructor (props) {
 		super(props)
 		this.loginHandler = this.loginHandler.bind(this)
+		this.githubLogin = this.githubLogin.bind(this)
 		this.state = {
 			logining: false
 		}
@@ -38,6 +40,17 @@ export default class Login extends Component {
 			})
 		})
 	}
+	githubLogin () {
+		const state = Date.now()
+		const url = `${GITHUB_OAUTH_URI}?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${GITHUB_REDIRECT_URI}&scope=user&state=${state}`
+		console.log(url);
+		const myWindow = window.open(
+			url,
+			'weshier-github-login',
+			'modal=yes,toolbar=no,titlebar=no,menuba=no,location=no,top=200,left=500,width=600,height=400'
+		  )
+		myWindow.focus()
+	}
 	render () {
 		const {logining} = this.state
 		return (
@@ -50,6 +63,9 @@ export default class Login extends Component {
 				</Form.Item>
 				<Form.Item {...tailLayout}>
 					<Button loading={logining} htmlType="submit" type="primary">登录</Button>
+				</Form.Item>
+				<Form.Item {...tailLayout}>
+					<Button onClick={this.githubLogin} htmlType="button" type="primary">github</Button>
 				</Form.Item>
 			</Form>
 		)

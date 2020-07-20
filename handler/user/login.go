@@ -1,6 +1,10 @@
 package user
 
 import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"net/http"
 	"weshierNext/handler"
 	"weshierNext/model"
 	"weshierNext/pkg/errno"
@@ -68,4 +72,88 @@ func Login(c *gin.Context) {
 		},
 	})
 	return
+}
+
+// GithubLogin github login
+func GithubLogin(c *gin.Context) {
+	code := c.Query("code")
+	if code == "" {
+		handler.SendResponse(c, errno.ErrBind, nil)
+		return
+	}
+	// 通过 code 在去请求 github 获取
+	fmt.Println(code)
+	client := &http.Client{}
+	// 创建新的 http request，自定义 Header
+	request, err := http.NewRequest("GET", fmt.Sprintf("https://github.com/login/oauth/access_token?client_id=%s&client_secret=%s&code=%s&redirect_uri=%s",
+		"90189950634776bd6a86", "8c724997ce2685ea372dfba9e971778ddf2971aa", code, "http://localhost:3333/api/user/auth/github/callback"), nil)
+	// 设置 accept-type
+	request.Header.Add("accept", "application/json")
+	if err != nil {
+		handler.SendResponse(c, errno.InternalServerError, nil)
+		return
+	}
+	resp, err := client.Do(request)
+	if err != nil {
+		handler.SendResponse(c, errno.InternalServerError, nil)
+		return
+	}
+	// 注意关闭 body 防止内存泄漏
+	defer resp.Body.Close()
+	// 读取 res.body 中的数据
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		handler.SendResponse(c, errno.InternalServerError, nil)
+		return
+	}
+	var data GithubAccessTokenRedirectStruct
+	// 反序列化响应体内容，获取 access_token 内容
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		handler.SendResponse(c, errno.InternalServerError, nil)
+		return
+	}
+	// 根据 access_token 去获取用户信息
+	// 创建请求
+	userReq, err := http.NewRequest("GET", fmt.Sprintf("https://api.github.com/user?access_token=%s", data.AccessToken), nil)
+	userReq.Header.Add("accept", "application/json")
+	if err != nil {
+		handler.SendResponse(c, errno.InternalServerError, nil)
+		return
+	}
+	// 发送请求
+	userResp, err := client.Do(userReq)
+	if err != nil {
+		handler.SendResponse(c, errno.InternalServerError, nil)
+		return
+	}
+	defer userResp.Body.Close()
+	// 读取响应体里的数据
+	userRespBody, err := ioutil.ReadAll(userResp.Body)
+	if err != nil {
+		handler.SendResponse(c, errno.InternalServerError, nil)
+		return
+	}
+	var userRespData GithubUserInfoStruct
+	err = json.Unmarshal(userRespBody, &userRespData)
+	if err != nil {
+		handler.SendResponse(c, errno.InternalServerError, nil)
+		return
+	}
+	userExiested, err := model.QueryUserByUsername(userRespData.Username)
+	if err != nil {
+		handler.SendResponse(c, errno.InternalServerError, nil)
+		return
+	}
+	if len(userExiested) == 0 {
+		// 如果是第一次登录
+		// 需要在本地数据库创建一个对应账号
+		// user := model.UserModel{
+		// 	Username: userRespData.Username,
+		// 	Password: ,
+		// }
+	} else {
+		// 直接用该账号登录
+	}
+	handler.SendResponse(c, nil, userRespData)
 }
