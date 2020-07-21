@@ -1,11 +1,16 @@
 package model
 
 import (
+	"weshierNext/handler"
 	"weshierNext/pkg/auth"
+	"weshierNext/pkg/errno"
 	"weshierNext/pkg/logger"
+	"weshierNext/pkg/token"
 	"weshierNext/pkg/validate"
 	"weshierNext/util"
 
+	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
@@ -25,6 +30,7 @@ type UserModel struct {
 	Age      uint8  `zh:"年龄" json:"age"`
 	Status   uint8  `zh:"年龄" json:"status"`
 	Resume   uint8  `zh:"年龄" json:"resume"`
+	AuthID   uint64 `json:"authId"`
 }
 
 // TableName specified table name
@@ -48,14 +54,15 @@ func InsertAdminUser() (err error) {
 		logger.Logger.Debug("admin user validate failed", zap.String("error", err.Error()))
 		return
 	}
-	existed, err := QueryUserByUsername(admin.Username)
-	if err != nil {
+	_, err = QueryUserByUsername(admin.Username)
+	if err == gorm.ErrRecordNotFound {
+		admin.Create()
 		return
 	}
-	if len(existed) != 0 {
-		return nil
+	if err != nil {
+		logger.Logger.Panic("admin user query failed", zap.String("error", err.Error()))
 	}
-	return admin.Create()
+	return
 }
 
 // Create create a user
@@ -83,9 +90,16 @@ func DeleteByID(id uint64) error {
 }
 
 // QueryUserByUsername query user by username
-func QueryUserByUsername(username string) ([]UserModel, error) {
-	u := []UserModel{}
+func QueryUserByUsername(username string) (UserModel, error) {
+	u := UserModel{}
 	data := DB.Self.Where("username=?", username).First(&u)
+	return u, data.Error
+}
+
+// QueryUserByUserID 根据 ID 查询用户信息
+func QueryUserByUserID(id uint64) (UserModel, error) {
+	u := UserModel{}
+	data := DB.Self.Where("id=?", id).First(&u)
 	return u, data.Error
 }
 
@@ -104,4 +118,34 @@ func (u *UserModel) EncryptPwd() (err error) {
 // Validate Validate the field
 func (u *UserModel) Validate() error {
 	return validate.Validate(*u)
+}
+
+// Login 登录操作
+func (u *UserModel) Login(c *gin.Context) (t string, err error) {
+	// sign the web token
+	t, err = token.Sign(c, token.JWTClaims{
+		ID: u.ID,
+		// Username: u.Username,
+		// Email:    u.Email,
+	}, viper.GetString("jwt.secret"))
+	if err != nil {
+		handler.SendResponse(c, errno.InternalServerError, nil)
+		return "", err
+	}
+	// save token to redis
+	redisConn := DB.RedisPool.Get()
+	defer redisConn.Close()
+	// save token
+	_, err = redisConn.Do("Set", t, t)
+	if err != nil {
+		handler.SendResponse(c, errno.ErrDatabase, nil)
+		return "", err
+	}
+	// set expire time
+	_, err = redisConn.Do("Expire", t, viper.GetInt64("jwt.maxage"))
+	if err != nil {
+		handler.SendResponse(c, errno.ErrDatabase, nil)
+		return "", err
+	}
+	return t, nil
 }

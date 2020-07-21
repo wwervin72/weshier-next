@@ -12,10 +12,7 @@ import (
 
 // JWTClaims is the context of the JSON web token
 type JWTClaims struct {
-	ID       uint64 `json:"id"`
-	Username string `json:"username"`
-	Nickname string `json:"nickname"`
-	Email    string `json:"email"`
+	ID uint64 `json:"id"`
 }
 
 func secretFunc(secret string) jwt.Keyfunc {
@@ -41,9 +38,6 @@ func Parse(tokenString string, secret string) (*JWTClaims, error) {
 		fmt.Println(claims)
 		// read the token if it's valid
 		ctx.ID = uint64(claims["id"].(float64))
-		ctx.Username = claims["username"].(string)
-		ctx.Email = claims["email"].(string)
-		ctx.Nickname = claims["nickname"].(string)
 		return ctx, nil
 	} else {
 		return ctx, errno.ErrTokenInvalid
@@ -79,11 +73,8 @@ func Sign(ctx *gin.Context, c JWTClaims, secret string) (tokenString string, err
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"nbf": nowSecond,
 		// token createdAt
-		"iat":      nowSecond,
-		"id":       c.ID,
-		"username": c.Username,
-		"email":    c.Email,
-		"nickname": c.Nickname,
+		"iat": nowSecond,
+		"id":  c.ID,
 	})
 	// sign the token with specified secret
 	tokenString, err = token.SignedString([]byte(secret))
