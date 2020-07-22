@@ -21,7 +21,7 @@ func Login(c *gin.Context) {
 		handler.SendResponse(c, errno.ErrBind, nil)
 		return
 	}
-	user, err := model.QueryUserByUsername(u.Username)
+	user, err := model.QueryUser("username=? and auth_id is NULL", u.Username)
 	if err == gorm.ErrRecordNotFound {
 		handler.SendResponse(c, errno.ErrUserNotFound, nil)
 		return
@@ -118,7 +118,7 @@ func GithubLogin(c *gin.Context) {
 		handler.SendResponse(c, errno.InternalServerError, nil)
 		return
 	}
-	userExiested, err := model.QueryUser("username=%s and auth_id!=null", userRespData.Username)
+	userExiested, err := model.QueryUser("username=? and auth_id is NOT NULL", userRespData.Username)
 	var userAuth = &model.UserAuth{}
 	if err == gorm.ErrRecordNotFound {
 		// 如果是第一次登录
