@@ -63,7 +63,7 @@ func GithubLogin(c *gin.Context) {
 	// 通过 code 在去请求 github 获取
 	client := &http.Client{}
 	// 创建新的 http request，自定义 Header
-	request, err := http.NewRequest("GET", fmt.Sprintf("https://github.com/login/oauth/access_token?client_id=%s&client_secret=%s&code=%s&redirect_uri=%s",
+	request, err := http.NewRequest("GET", fmt.Sprintf("%s?client_id=%s&client_secret=%s&code=%s&redirect_uri=%s", viper.GetString("github.auth_url"),
 		viper.GetString("github.client_id"), viper.GetString("github.client_secret"), code, viper.GetString("github.redirect_url")), nil)
 	// 设置 accept-type
 	request.Header.Add("accept", "application/json")
@@ -93,7 +93,7 @@ func GithubLogin(c *gin.Context) {
 	}
 	// 根据 access_token 去获取用户信息
 	// 创建请求
-	userReq, err := http.NewRequest("GET", fmt.Sprintf("https://api.github.com/user?access_token=%s", data.AccessToken), nil)
+	userReq, err := http.NewRequest("GET", fmt.Sprintf("%s?access_token=%s", viper.GetString("github.access_url"), data.AccessToken), nil)
 	userReq.Header.Add("accept", "application/json")
 	if err != nil {
 		handler.SendResponse(c, errno.InternalServerError, nil)
@@ -119,19 +119,48 @@ func GithubLogin(c *gin.Context) {
 		return
 	}
 	userExiested, err := model.QueryUserByUsername(userRespData.Username)
-	fmt.Println(userExiested)
+	var userAuth model.UserAuth
 	if err == gorm.ErrRecordNotFound {
 		// 如果是第一次登录
 		// 需要在本地数据库创建一个对应账号
 		userExiested = model.UserModel{
 			Username: userRespData.Username,
+			Email:    userRespData.Email,
+			Bio:      userRespData.Bio,
+			URL:      userRespData.URL,
+			Avatar:   userRespData.Avatar,
 		}
-		// userAuth = model.UserAuth{
-		// 	UserID: 1,
-		// 	OpenID: 1,
-		// 	LoginType: "github",
-		// 	AccessToken: data.AccessToken,
-		// }
+		userAuth = model.UserAuth{
+			OpenID:      userRespData.ID,
+			LoginType:   "github",
+			AccessToken: data.AccessToken,
+		}
+		tx := model.DB.Self.Begin()
+		insertUserResult := tx.Create(&userExiested)
+		insertUserData, ok := insertUserResult.Value.(*model.UserModel)
+		if insertUserResult.Error != nil || !ok {
+			tx.Rollback()
+			handler.SendResponse(c, errno.InternalServerError, nil)
+			return
+		}
+		userAuth.UserID = insertUserData.ID
+		insertUserAuthResult := tx.Create(&userAuth)
+		insertUserAuthData, ok := insertUserAuthResult.Value.(*model.UserAuth)
+		if insertUserAuthResult.Error != nil || !ok {
+			tx.Rollback()
+			handler.SendResponse(c, errno.InternalServerError, nil)
+			return
+		}
+		userExiested.AuthID = insertUserAuthData.ID
+		// 更新 authID 字段
+		err = tx.Save(&userExiested).Error
+		if err != nil {
+			tx.Rollback()
+			handler.SendResponse(c, errno.InternalServerError, nil)
+			return
+		}
+		// 所有操作都完成
+		tx.Commit()
 	} else if err != nil {
 		handler.SendResponse(c, errno.InternalServerError, nil)
 		return
@@ -144,5 +173,6 @@ func GithubLogin(c *gin.Context) {
 	handler.SendResponse(c, nil, &LoginResStruct{
 		Token:     t,
 		UserModel: userExiested,
+		UserAuth:  userAuth,
 	})
 }

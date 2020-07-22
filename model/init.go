@@ -29,7 +29,7 @@ func (db *DataBase) Init() {
 		Self:      GetSelfDB(),
 		RedisPool: GetRedisPool(),
 	}
-	DB.Self.AutoMigrate(&UserModel{})
+	DB.Self.AutoMigrate(&UserModel{}, &UserAuth{})
 	InsertAdminUser()
 }
 

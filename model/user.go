@@ -28,8 +28,8 @@ type UserModel struct {
 	Phone    uint64 `zh:"手机号" json:"phone"`
 	Role     uint8  `zh:"角色" json:"role"`
 	Age      uint8  `zh:"年龄" json:"age"`
-	Status   uint8  `zh:"年龄" json:"status"`
-	Resume   uint8  `zh:"年龄" json:"resume"`
+	Status   uint8  `json:"status"`
+	Resume   uint8  `zh:"简历" json:"resume"`
 	AuthID   uint64 `json:"authId"`
 }
 

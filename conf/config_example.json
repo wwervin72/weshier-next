@@ -31,6 +31,8 @@
 		"email": "lw_ervin@sina.cn"
 	},
 	"github": {
+		"auth_url": "https://github.com/login/oauth/access_token",
+		"access_url": "https://api.github.com/user",
 		"redirect_url": "",
 		"client_id": "",
 		"client_secret": ""

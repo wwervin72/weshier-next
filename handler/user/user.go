@@ -19,6 +19,7 @@ type LoginReqStruct struct {
 // LoginResStruct login response body struct
 type LoginResStruct struct {
 	model.UserModel
+	model.UserAuth
 	Token string `json:"token"`
 }
 
@@ -37,7 +38,7 @@ type GithubAccessTokenRedirectStruct struct {
 
 // GithubUserInfoStruct github 登录后拿到的 user 信息结构
 type GithubUserInfoStruct struct {
-	ID                uint32 `json:"id"`
+	ID                uint64 `json:"id"`
 	Username          string `json:"login"`
 	Avatar            string `json:"avatar_url"`
 	URL               string `json:"url"`

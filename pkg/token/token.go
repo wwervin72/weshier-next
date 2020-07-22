@@ -46,21 +46,21 @@ func Parse(tokenString string, secret string) (*JWTClaims, error) {
 
 // ParseRequest gets the token from the header and
 // pass it to the parse function to parses the token
-func ParseRequest(c *gin.Context) (*JWTClaims, error) {
+func ParseRequest(c *gin.Context) (*JWTClaims, string, error) {
 	header := c.Request.Header.Get("Authorization")
 	// load the jwt secret from config
 	secret := viper.GetString("jwt.secret")
 	if len(header) == 0 {
-		return nil, errno.ErrTokenEmpty
+		return nil, "", errno.ErrTokenEmpty
 	}
 	var t string
 	// parse the header o get the token part
 	fmt.Sscanf(header, "Bearer %s", &t)
 	ctx, err := Parse(t, secret)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
-	return ctx, nil
+	return ctx, t, nil
 }
 
 // Sign signs the JWTClaims with the specified secret

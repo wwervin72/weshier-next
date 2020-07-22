@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"weshierNext/handler"
 	"weshierNext/model"
 	"weshierNext/pkg/errno"
@@ -13,7 +12,7 @@ import (
 
 // QueryUserInfo query userinfo by token
 func QueryUserInfo(c *gin.Context) {
-	u, err := token.ParseRequest(c)
+	u, t, err := token.ParseRequest(c)
 	if err != nil {
 		handler.SendResponse(c, err, nil)
 		return
@@ -26,9 +25,10 @@ func QueryUserInfo(c *gin.Context) {
 		handler.SendResponse(c, errno.InternalServerError, nil)
 		return
 	}
-	// 如果是非本地登录
+	auth := &model.UserAuth{}
+	// 如果是第三方登录
 	if user.AuthID != 0 {
-		auth, err := model.QueryAuthByID(user.AuthID)
+		auth, err = model.QueryAuthByID(user.AuthID)
 		if err == gorm.ErrRecordNotFound {
 			handler.SendResponse(c, errno.ErrUserNotFound, nil)
 			return
@@ -36,9 +36,11 @@ func QueryUserInfo(c *gin.Context) {
 			handler.SendResponse(c, errno.InternalServerError, nil)
 			return
 		}
-		fmt.Println(auth.AccessToken)
-		// 根据 access_token 去 github 拉取用户信息
 	}
-	handler.SendResponse(c, nil, &user)
+	handler.SendResponse(c, nil, &LoginResStruct{
+		UserModel: user,
+		UserAuth:  *auth,
+		Token:     t,
+	})
 	return
 }
