@@ -118,8 +118,8 @@ func GithubLogin(c *gin.Context) {
 		handler.SendResponse(c, errno.InternalServerError, nil)
 		return
 	}
-	userExiested, err := model.QueryUserByUsername(userRespData.Username)
-	var userAuth model.UserAuth
+	userExiested, err := model.QueryUser("username=%s and auth_id!=null", userRespData.Username)
+	var userAuth = &model.UserAuth{}
 	if err == gorm.ErrRecordNotFound {
 		// 如果是第一次登录
 		// 需要在本地数据库创建一个对应账号
@@ -129,12 +129,12 @@ func GithubLogin(c *gin.Context) {
 			Bio:      userRespData.Bio,
 			URL:      userRespData.URL,
 			Avatar:   userRespData.Avatar,
+			Nickname: userRespData.Name,
+			Role:     model.TOURIST,
 		}
-		userAuth = model.UserAuth{
-			OpenID:      userRespData.ID,
-			LoginType:   "github",
-			AccessToken: data.AccessToken,
-		}
+		userAuth.OpenID = userRespData.ID
+		userAuth.LoginType = "github"
+		userAuth.AccessToken = data.AccessToken
 		tx := model.DB.Self.Begin()
 		insertUserResult := tx.Create(&userExiested)
 		insertUserData, ok := insertUserResult.Value.(*model.UserModel)
@@ -165,6 +165,14 @@ func GithubLogin(c *gin.Context) {
 		handler.SendResponse(c, errno.InternalServerError, nil)
 		return
 	}
+	userAuth, err = model.QueryAuthByID(userExiested.AuthID)
+	// 更新 access_token
+	userAuth.AccessToken = data.AccessToken
+	err = model.DB.Self.Save(&userAuth).Error
+	if err != nil {
+		handler.SendResponse(c, errno.InternalServerError, nil)
+		return
+	}
 	t, err := userExiested.Login(c)
 	if err != nil {
 		handler.SendResponse(c, errno.InternalServerError, nil)
@@ -173,6 +181,6 @@ func GithubLogin(c *gin.Context) {
 	handler.SendResponse(c, nil, &LoginResStruct{
 		Token:     t,
 		UserModel: userExiested,
-		UserAuth:  userAuth,
+		UserAuth:  *userAuth,
 	})
 }

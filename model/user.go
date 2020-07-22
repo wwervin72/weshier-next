@@ -26,7 +26,7 @@ type UserModel struct {
 	Avatar   string `zh:"头像" json:"avatar"`
 	URL      string `zh:"头像" json:"url"`
 	Phone    uint64 `zh:"手机号" json:"phone"`
-	Role     uint8  `zh:"角色" json:"role"`
+	Role     string `zh:"角色" json:"role"`
 	Age      uint8  `zh:"年龄" json:"age"`
 	Status   uint8  `json:"status"`
 	Resume   uint8  `zh:"简历" json:"resume"`
@@ -45,6 +45,7 @@ func InsertAdminUser() (err error) {
 		Password: viper.GetString("admin.password"),
 		Email:    viper.GetString("admin.email"),
 		Nickname: viper.GetString("admin.nickname"),
+		Role:     viper.GetString("admin.role"),
 	}
 	if admin.Nickname == "" {
 		admin.Nickname = util.RandomString(5)
@@ -96,6 +97,13 @@ func QueryUserByUsername(username string) (UserModel, error) {
 	return u, data.Error
 }
 
+// QueryUser 查询用户
+func QueryUser(condition string, args ...interface{}) (UserModel, error) {
+	u := UserModel{}
+	data := DB.Self.Where(condition, args...).First(&u)
+	return u, data.Error
+}
+
 // QueryUserByUserID 根据 ID 查询用户信息
 func QueryUserByUserID(id uint64) (UserModel, error) {
 	u := UserModel{}
@@ -125,8 +133,6 @@ func (u *UserModel) Login(c *gin.Context) (t string, err error) {
 	// sign the web token
 	t, err = token.Sign(c, token.JWTClaims{
 		ID: u.ID,
-		// Username: u.Username,
-		// Email:    u.Email,
 	}, viper.GetString("jwt.secret"))
 	if err != nil {
 		handler.SendResponse(c, errno.InternalServerError, nil)
