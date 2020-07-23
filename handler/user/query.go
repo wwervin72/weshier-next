@@ -38,8 +38,9 @@ func QueryUserInfo(c *gin.Context) {
 		}
 	}
 	handler.SendResponse(c, nil, &LoginResStruct{
-		UserModel: user,
 		UserAuth:  *auth,
+		UserModel: user,
+		ID:        user.ID,
 		Token:     t,
 	})
 	return

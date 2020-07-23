@@ -182,5 +182,6 @@ func GithubLogin(c *gin.Context) {
 		Token:     t,
 		UserModel: userExiested,
 		UserAuth:  *userAuth,
+		ID:        userExiested.ID,
 	})
 }

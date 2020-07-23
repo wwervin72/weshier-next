@@ -1,0 +1,15 @@
+@import '../../styles/variables.scss';
+
+header {
+	display: flex;
+	justify-content: space-between;
+	height: $headerHeight;
+	border-bottom: 1px solid $borderColor;
+	padding: 0 25px;
+}
+
+nav {
+	.nav {
+		margin-right: 15px;
+	}
+}

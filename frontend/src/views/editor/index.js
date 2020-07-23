@@ -1,26 +1,28 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router-dom'
-import {ADMIN_ROLE} from '../../utils/variables'
+import { CAN_EDITOR_ROLE } from '../../utils/variables';
 
+@withRouter
 @connect((state) => ({
 	userInfo: state.userInfo
 }))
-@withRouter
-class Admin extends Component {
+class Editor extends Component {
 	componentWillReceiveProps (nextProps) {
 		const {userInfo, history} = nextProps
 		if (!userInfo) {
 			history.replace('/login')
-		} else if (userInfo.role !== ADMIN_ROLE) {
+		} else if (!CAN_EDITOR_ROLE.includes(userInfo.role)) {
 			history.replace('/')
 		}
 	}
 	render () {
 		return (
-			<div>Admin</div>
+			<div>
+				editor
+			</div>
 		)
 	}
 }
 
-export default Admin
+export default Editor

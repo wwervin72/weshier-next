@@ -1,0 +1,12 @@
+@import '../../styles/variables.scss';
+
+.logo {
+	display: inline-block;
+	width: 100px;
+	height: 45px;
+	margin-top: ($headerHeight - 45px) / 2;
+	background: url('../../assets/img/logo/weshier.png');
+	&:hover {
+		background-image: url('../../assets/img/logo/weshier_hover.png');
+	}
+}

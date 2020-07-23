@@ -1,6 +1,5 @@
 import React from "react";
-import { Switch, Route, BrowserRouter as Router, Redirect } from "react-router-dom";
-import store from '../redux/store'
+import { Switch, Route, BrowserRouter as Router } from "react-router-dom";
 import Layout from "../views/layout";
 import Login from "../views/login";
 import Github from "../views/oauth/github";
@@ -10,14 +9,7 @@ export default () => {
 	return (
 	<Router>
 		<Switch>
-			<Route path="/login" render={() => {
-				const {userInfo} = store.getState()
-				if (userInfo) {
-					return <Redirect to="/"></Redirect>
-				} else {
-					return <Login></Login>
-				}
-			}}></Route>
+			<Route path="/login" component={Login}></Route>
 			<Route path="/login-github" component={Github}></Route>
 			<Route path="/404" component={NotMatch}></Route>
 			<Route path="/" component={Layout}></Route>

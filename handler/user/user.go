@@ -18,8 +18,9 @@ type LoginReqStruct struct {
 
 // LoginResStruct login response body struct
 type LoginResStruct struct {
-	model.UserModel
 	model.UserAuth
+	model.UserModel
+	ID    uint64 `json:"id"`
 	Token string `json:"token"`
 }
 

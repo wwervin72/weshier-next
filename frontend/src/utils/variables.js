@@ -10,3 +10,5 @@ export const ADMIN_ROLE = 'admin'
 export const MEMBER_ROLE = 'member'
 // 游客
 export const TOURIST_ROLE = 'tourist'
+
+export const CAN_EDITOR_ROLE = [ADMIN_ROLE, MEMBER_ROLE]
