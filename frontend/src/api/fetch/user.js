@@ -1,5 +1,5 @@
 import {fetch} from './index'
-import {loginURL, logoutURL} from '../url'
+import {loginURL, logoutURL, userInfoURL} from '../url'
 
 /**
  * 登录
@@ -10,6 +10,16 @@ export function login(data) {
 		method: 'post',
 		url: loginURL,
 		data
+	})
+}
+
+/**
+ * 根据 token 获取用户信息
+ * @param {*} data
+ */
+export function fetchUserInfo() {
+	return fetch({
+		url: userInfoURL,
 	})
 }
 

@@ -1,7 +1,10 @@
 import React, {Component} from 'react'
 import {Form, Input, Button} from 'antd'
-// import {PoweroffOutlined} from '@ant-design/icons'
+import {connect} from 'react-redux'
+import {withRouter} from 'react-router-dom'
 import {login} from '../../api/fetch/user'
+import {setLoginToken} from '../../utils/cookie'
+import {updateUserInfo} from '../../redux/action/user'
 import {GITHUB_OAUTH_URI, GITHUB_REDIRECT_URI, GITHUB_CLIENT_ID} from '../../utils/variables'
 
 const layout = {
@@ -12,10 +15,13 @@ const layout = {
 	wrapperCol: { offset: 8, span: 16 },
   };
 
-// @Form.create({
-// 	onFieldsChange(props, items) {},
-// })
-export default class Login extends Component {
+@connect((state) => ({
+	userInfo: state.userInfo
+}), {
+	updateUserInfo
+})
+@withRouter
+class Login extends Component {
 	formRef = React.createRef()
 	constructor (props) {
 		super(props)
@@ -25,16 +31,26 @@ export default class Login extends Component {
 			logining: false
 		}
 	}
+	componentWillReceiveProps (nextProps) {
+		const {userInfo, history} = nextProps
+		// 已登录
+		if (userInfo) {
+			history.replace('/')
+		}
+	}
 	loginHandler (data) {
 		if (this.state.logining) return
 		this.setState({
 			logining: true
 		})
 		login(data).then(res => {
-			console.log(res);
+			this.setState({
+				logining: false
+			})
+			setLoginToken(res.token)
+			this.props.updateUserInfo(res)
+			this.props.history.replace('/')
 		}).catch(err => {
-			console.log(err);
-		}).finally(() => {
 			this.setState({
 				logining: false
 			})
@@ -43,7 +59,6 @@ export default class Login extends Component {
 	githubLogin () {
 		const state = Date.now()
 		const url = `${GITHUB_OAUTH_URI}?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${GITHUB_REDIRECT_URI}&scope=user&state=${state}`
-		console.log(url);
 		const myWindow = window.open(
 			url,
 			'weshier-github-login',
@@ -55,10 +70,10 @@ export default class Login extends Component {
 		const {logining} = this.state
 		return (
 			<Form {...layout} ref={this.formRef} name="login-form" onFinish={this.loginHandler}>
-				<Form.Item name="username" hasFeedback label="账号" rules={[{required: true, message: '请输入登录账号'}]}>
+				<Form.Item name="userName" hasFeedback label="账号" rules={[{required: true, message: '请输入登录账号'}]}>
 					<Input type="text"></Input>
 				</Form.Item>
-				<Form.Item name="password" hasFeedback label="密码" rules={[{required: true, message: '请输入登录密码'}]}>
+				<Form.Item name="passWord" hasFeedback label="密码" rules={[{required: true, message: '请输入登录密码'}]}>
 					<Input type="password"></Input>
 				</Form.Item>
 				<Form.Item {...tailLayout}>
@@ -71,3 +86,5 @@ export default class Login extends Component {
 		)
 	}
 }
+
+export default Login

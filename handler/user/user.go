@@ -12,8 +12,8 @@ type RegisterReqStruct struct {
 
 // LoginReqStruct login request body struct
 type LoginReqStruct struct {
-	Username string `zh:"账号" json:"username" binding:"required"`
-	Password string `zh:"密码" json:"password" binding:"required"`
+	UserName string `zh:"账号" json:"userName" binding:"required"`
+	PassWord string `zh:"密码" json:"passWord" binding:"required"`
 }
 
 // LoginResStruct login response body struct
@@ -39,7 +39,7 @@ type GithubAccessTokenRedirectStruct struct {
 // GithubUserInfoStruct github 登录后拿到的 user 信息结构
 type GithubUserInfoStruct struct {
 	ID                uint64 `json:"id"`
-	Username          string `json:"login"`
+	UserName          string `json:"login"`
 	Avatar            string `json:"avatar_url"`
 	URL               string `json:"url"`
 	HTMLURL           string `json:"html_url"`

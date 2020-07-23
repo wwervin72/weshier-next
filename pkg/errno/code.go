@@ -3,7 +3,7 @@ package errno
 // Common errors
 var (
 	// OK 正常
-	OK                  = &Errno{Code: 0, Message: "OK"}
+	OK                  = &Errno{Code: 200, Message: "OK"}
 	InternalServerError = &Errno{Code: 10001, Message: "Internal server error."}
 	ErrBind             = &Errno{Code: 10002, Message: "Error occurred while binding the request body to the struct."}
 	ErrBadRequest       = &Errno{Code: 10003, Message: "Bad request."}

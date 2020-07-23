@@ -35,7 +35,6 @@ func Parse(tokenString string, secret string) (*JWTClaims, error) {
 	if err != nil {
 		return ctx, err
 	} else if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		fmt.Println(claims)
 		// read the token if it's valid
 		ctx.ID = uint64(claims["id"].(float64))
 		return ctx, nil

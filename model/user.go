@@ -18,10 +18,10 @@ import (
 // UserModel user model
 type UserModel struct {
 	BaseModel
-	Username string `zh:"用户名" json:"username" gorm:"not null;unique_index" binding:"required" validate:"min=3,max=10"`
-	Password string `zh:"密码" json:"password" gorm:"not null" binding:"required" validate:"min=5,max=50"`
+	UserName string `zh:"用户名" json:"userName" gorm:"not null;column:username;unique_index" binding:"required" validate:"min=3,max=10"`
+	PassWord string `zh:"密码" json:"-" gorm:"not null;column:password;" binding:"required" validate:"min=5,max=50"`
 	Email    string `zh:"邮箱" json:"email" gorm:"not null" binding:"required" validate:"email"`
-	Nickname string `zh:"昵称" json:"nickname" validate:"max=24"`
+	NickName string `zh:"昵称" json:"nickName" gorm:"column:nickname;" validate:"max=24"`
 	Bio      string `zh:"简介" json:"bio"`
 	Avatar   string `zh:"头像" json:"avatar"`
 	URL      string `zh:"头像" json:"url"`
@@ -30,7 +30,7 @@ type UserModel struct {
 	Age      uint8  `zh:"年龄" json:"age"`
 	Status   uint8  `json:"status"`
 	Resume   uint8  `zh:"简历" json:"resume"`
-	AuthID   uint64 `json:"authId"`
+	AuthID   uint64 `json:"authId" gorm:"column:auth_id;"`
 }
 
 // TableName specified table name
@@ -41,21 +41,21 @@ func (u *UserModel) TableName() string {
 // InsertAdminUser auto insert admin account into user table
 func InsertAdminUser() (err error) {
 	admin := &UserModel{
-		Username: viper.GetString("admin.username"),
-		Password: viper.GetString("admin.password"),
+		UserName: viper.GetString("admin.userName"),
+		PassWord: viper.GetString("admin.passWord"),
 		Email:    viper.GetString("admin.email"),
-		Nickname: viper.GetString("admin.nickname"),
+		NickName: viper.GetString("admin.nickName"),
 		Role:     viper.GetString("admin.role"),
 	}
-	if admin.Nickname == "" {
-		admin.Nickname = util.RandomString(5)
+	if admin.NickName == "" {
+		admin.NickName = util.RandomString(5)
 	}
 	err = admin.Validate()
 	if err != nil {
 		logger.Logger.Debug("admin user validate failed", zap.String("error", err.Error()))
 		return
 	}
-	_, err = QueryUserByUsername(admin.Username)
+	_, err = QueryUserByUsername(admin.UserName)
 	if err == gorm.ErrRecordNotFound {
 		admin.Create()
 		return
@@ -113,13 +113,13 @@ func QueryUserByUserID(id uint64) (UserModel, error) {
 
 // Compare compare pwd whether same
 func (u *UserModel) Compare(pwd string) error {
-	err := auth.Compare(u.Password, pwd)
+	err := auth.Compare(u.PassWord, pwd)
 	return err
 }
 
 // EncryptPwd encry user password
 func (u *UserModel) EncryptPwd() (err error) {
-	u.Password, err = auth.Encrypt(u.Password)
+	u.PassWord, err = auth.Encrypt(u.PassWord)
 	return err
 }
 

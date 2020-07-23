@@ -39,7 +39,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		}
 		userGroup := api.Group("/user")
 		{
-			userGroup.GET("/", user.QueryUserInfo)
+			userGroup.GET("", user.QueryUserInfo)
 			// github login
 			userGroup.GET("/auth/github/callback", user.GithubLogin)
 			userGroup.POST("/login", user.Login)
