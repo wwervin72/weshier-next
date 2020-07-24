@@ -2,9 +2,10 @@ import React, {Component, Fragment} from 'react'
 import {connect} from 'react-redux'
 import {withRouter, Link} from 'react-router-dom'
 import {Menu, Dropdown} from 'antd'
-import {HomeOutlined, LogoutOutlined} from '@ant-design/icons'
+import {HomeOutlined, LogoutOutlined, EditOutlined, LoginOutlined} from '@ant-design/icons'
 import Logo from '../logo'
 import Avatar from '../avatar/index'
+import {ADMIN_ROLE} from '../../utils/variables'
 import './index.scss'
 
 @connect((state, props) => ({
@@ -14,7 +15,7 @@ import './index.scss'
 class Header extends Component {
 	noLogin () {
 		return (
-			<Link to="/login">登录</Link>
+			<Link to="/login"><LoginOutlined /></Link>
 		)
 	}
 	userDropdown (userInfo) {
@@ -39,8 +40,14 @@ class Header extends Component {
 		const {userInfo} = this.props
 		return (
 			<Fragment>
-				<Link className="nav" to="/editor">写点啥</Link>
-				<Link className="nav" to="/admin">后台</Link>
+				<Link className="nav" to="/editor"><EditOutlined /></Link>
+				{
+					userInfo.role === ADMIN_ROLE ?
+						<Link className="nav" to="/admin">
+							<img className="admin_back" alt="weshier" src={require('../../assets/img/logo/shier.png')} />
+						</Link> :
+						''
+				}
 				<Dropdown overlayClassName="avatar_op" overlay={this.userDropdown(userInfo)} placement="bottomRight">
 					<span className="avatar_trigger">
 						<Avatar user={userInfo}></Avatar>

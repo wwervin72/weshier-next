@@ -12,7 +12,12 @@ nav {
 	.nav {
 		margin-right: 15px;
 		vertical-align: middle;
+		color: $pinkColor;
 	}
+}
+
+.anticon-edit {
+	font-size: 18px;
 }
 
 .nav {
@@ -20,6 +25,11 @@ nav {
 		margin-left: 10px;
 		cursor: pointer;
 	}
+}
+
+.admin_back {
+	width: 30px;
+	height: 30px;
 }
 
 .avatar_trigger {
