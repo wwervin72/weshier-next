@@ -11,5 +11,23 @@ header {
 nav {
 	.nav {
 		margin-right: 15px;
+		vertical-align: middle;
 	}
+}
+
+.nav {
+	label {
+		margin-left: 10px;
+		cursor: pointer;
+	}
+}
+
+.avatar_trigger {
+	display: inline-block;
+	height: $headerHeight;
+	line-height: $headerHeight;
+}
+
+.avatar_op {
+	min-width: 100px !important;
 }

@@ -2,8 +2,9 @@ import React, {Component, Fragment} from 'react'
 import {connect} from 'react-redux'
 import {withRouter, Link} from 'react-router-dom'
 import {Menu, Dropdown} from 'antd'
+import {HomeOutlined, LogoutOutlined} from '@ant-design/icons'
 import Logo from '../logo'
-import Avatar from '../avatar'
+import Avatar from '../avatar/index'
 import './index.scss'
 
 @connect((state, props) => ({
@@ -16,22 +17,34 @@ class Header extends Component {
 			<Link to="/login">登录</Link>
 		)
 	}
-	userDropdown () {
+	userDropdown (userInfo) {
 		return (
 			<Menu>
 				<Menu.Item>
-					<Link className="nav" to="/logout">登出</Link>
+					<Link className="nav" to={"/u/" + userInfo.id}>
+						<HomeOutlined />
+						<label>主页</label>
+					</Link>
+				</Menu.Item>
+				<Menu.Item>
+					<Link className="nav" to="/logout">
+						<LogoutOutlined />
+						<label>登出</label>
+					</Link>
 				</Menu.Item>
 			</Menu>
 		)
 	}
 	logined () {
+		const {userInfo} = this.props
 		return (
 			<Fragment>
 				<Link className="nav" to="/editor">写点啥</Link>
 				<Link className="nav" to="/admin">后台</Link>
-				<Dropdown overlay={this.userDropdown()} placement="bottomLeft">
-					<Avatar></Avatar>
+				<Dropdown overlayClassName="avatar_op" overlay={this.userDropdown(userInfo)} placement="bottomRight">
+					<span className="avatar_trigger">
+						<Avatar user={userInfo}></Avatar>
+					</span>
 				</Dropdown>
 			</Fragment>
 		)
