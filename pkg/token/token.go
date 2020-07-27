@@ -12,7 +12,18 @@ import (
 
 // JWTClaims is the context of the JSON web token
 type JWTClaims struct {
-	ID uint64 `json:"id"`
+	ID       uint64 `json:"id"`
+	UserName string `json:"userName"`
+	Email    string `json:"email"`
+	NickName string `json:"nickName"`
+	Bio      string `json:"bio"`
+	Avatar   string `json:"avatar"`
+	URL      string `json:"url"`
+	Phone    uint64 `json:"phone"`
+	Role     string `json:"role"`
+	Age      uint8  `json:"age"`
+	Status   uint8  `json:"status"`
+	Resume   uint8  `zh:"简历" json:"resume"`
 }
 
 func secretFunc(secret string) jwt.Keyfunc {
