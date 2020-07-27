@@ -1,6 +1,7 @@
 package token
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 	"weshierNext/pkg/errno"
@@ -23,7 +24,8 @@ type JWTClaims struct {
 	Role     string `json:"role"`
 	Age      uint8  `json:"age"`
 	Status   uint8  `json:"status"`
-	Resume   uint8  `zh:"简历" json:"resume"`
+	Resume   uint8  `json:"resume"`
+	AuthID   uint64 `json:"authId"`
 }
 
 func secretFunc(secret string) jwt.Keyfunc {
@@ -46,8 +48,14 @@ func Parse(tokenString string, secret string) (*JWTClaims, error) {
 	if err != nil {
 		return ctx, err
 	} else if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		// read the token if it's valid
-		ctx.ID = uint64(claims["id"].(float64))
+		d, err := json.Marshal(claims)
+		if err != nil {
+			return ctx, errno.InternalServerError
+		}
+		err = json.Unmarshal(d, ctx)
+		if err != nil {
+			return ctx, errno.InternalServerError
+		}
 		return ctx, nil
 	} else {
 		return ctx, errno.ErrTokenInvalid
@@ -83,8 +91,20 @@ func Sign(ctx *gin.Context, c JWTClaims, secret string) (tokenString string, err
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"nbf": nowSecond,
 		// token createdAt
-		"iat": nowSecond,
-		"id":  c.ID,
+		"iat":      nowSecond,
+		"id":       c.ID,
+		"userName": c.UserName,
+		"email":    c.Email,
+		"nickName": c.NickName,
+		"bio":      c.Bio,
+		"avatar":   c.Avatar,
+		"url":      c.URL,
+		"phone":    c.Phone,
+		"role":     c.Role,
+		"age":      c.Age,
+		"status":   c.Status,
+		"resume":   c.Resume,
+		"authId":   c.AuthID,
 	})
 	// sign the token with specified secret
 	tokenString, err = token.SignedString([]byte(secret))

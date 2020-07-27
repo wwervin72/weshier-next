@@ -129,14 +129,27 @@ func (u *UserModel) Validate() error {
 }
 
 // Login 登录操作
-func (u *UserModel) Login(c *gin.Context) (t string, err error) {
+func (u *UserModel) Login(c *gin.Context) (claims *token.JWTClaims, t string, err error) {
 	// sign the web token
-	t, err = token.Sign(c, token.JWTClaims{
-		ID: u.ID,
-	}, viper.GetString("jwt.secret"))
+	claims = &token.JWTClaims{
+		ID:       u.ID,
+		UserName: u.UserName,
+		Email:    u.Email,
+		NickName: u.NickName,
+		Bio:      u.Bio,
+		Avatar:   u.Avatar,
+		URL:      u.URL,
+		Phone:    u.Phone,
+		Role:     u.Role,
+		Age:      u.Age,
+		Status:   u.Status,
+		Resume:   u.Resume,
+		AuthID:   u.AuthID,
+	}
+	t, err = token.Sign(c, *claims, viper.GetString("jwt.secret"))
 	if err != nil {
 		handler.SendResponse(c, errno.InternalServerError, nil)
-		return "", err
+		return claims, "", err
 	}
 	// save token to redis
 	redisConn := DB.RedisPool.Get()
@@ -145,13 +158,13 @@ func (u *UserModel) Login(c *gin.Context) (t string, err error) {
 	_, err = redisConn.Do("Set", t, t)
 	if err != nil {
 		handler.SendResponse(c, errno.ErrDatabase, nil)
-		return "", err
+		return claims, "", err
 	}
 	// set expire time
 	_, err = redisConn.Do("Expire", t, viper.GetInt64("jwt.maxage"))
 	if err != nil {
 		handler.SendResponse(c, errno.ErrDatabase, nil)
-		return "", err
+		return claims, "", err
 	}
-	return t, nil
+	return claims, t, nil
 }

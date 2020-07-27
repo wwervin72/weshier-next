@@ -2,6 +2,7 @@ package user
 
 import (
 	"weshierNext/model"
+	"weshierNext/pkg/token"
 )
 
 // RegisterReqStruct register request body struct
@@ -19,7 +20,7 @@ type LoginReqStruct struct {
 // LoginResStruct login response body struct
 type LoginResStruct struct {
 	model.UserAuth
-	model.UserModel
+	token.JWTClaims
 	ID    uint64 `json:"id"`
 	Token string `json:"token"`
 }

@@ -34,21 +34,15 @@ func Login(c *gin.Context) {
 		handler.SendResponse(c, errno.ErrPasswordIncorrect, nil)
 		return
 	}
-	t, err := user.Login(c)
+	claims, t, err := user.Login(c)
 	if err != nil {
 		handler.SendResponse(c, err, nil)
 		return
 	}
+
 	handler.SendResponse(c, nil, &LoginResStruct{
-		Token: t,
-		UserModel: model.UserModel{
-			UserName: user.UserName,
-			Email:    user.Email,
-			NickName: user.NickName,
-			BaseModel: model.BaseModel{
-				ID: user.ID,
-			},
-		},
+		Token:     t,
+		JWTClaims: *claims,
 	})
 	return
 }
@@ -173,14 +167,14 @@ func GithubLogin(c *gin.Context) {
 		handler.SendResponse(c, errno.InternalServerError, nil)
 		return
 	}
-	t, err := userExiested.Login(c)
+	claims, t, err := userExiested.Login(c)
 	if err != nil {
 		handler.SendResponse(c, errno.InternalServerError, nil)
 		return
 	}
 	handler.SendResponse(c, nil, &LoginResStruct{
 		Token:     t,
-		UserModel: userExiested,
+		JWTClaims: *claims,
 		UserAuth:  *userAuth,
 		ID:        userExiested.ID,
 	})
