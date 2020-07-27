@@ -8,7 +8,7 @@ import {ADMIN_ROLE} from '../../utils/variables'
 }))
 @withRouter
 class Admin extends Component {
-	componentWillReceiveProps (nextProps) {
+	UNSAFE_componentWillReceiveProps (nextProps) {
 		const {userInfo, history} = nextProps
 		if (!userInfo) {
 			history.replace('/login')

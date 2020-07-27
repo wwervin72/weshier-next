@@ -8,7 +8,7 @@ import { CAN_EDITOR_ROLE } from '../../utils/variables';
 	userInfo: state.userInfo
 }))
 class Editor extends Component {
-	componentWillReceiveProps (nextProps) {
+	UNSAFE_componentWillReceiveProps (nextProps) {
 		const {userInfo, history} = nextProps
 		if (!userInfo) {
 			history.replace('/login')

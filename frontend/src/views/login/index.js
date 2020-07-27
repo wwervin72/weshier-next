@@ -31,7 +31,7 @@ class Login extends Component {
 			logining: false
 		}
 	}
-	componentWillReceiveProps (nextProps) {
+	UNSAFE_componentWillReceiveProps (nextProps) {
 		const {userInfo, history} = nextProps
 		// 已登录
 		if (userInfo) {
