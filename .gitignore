@@ -19,3 +19,5 @@ frontend/yarn-error.log*
 tmp/
 conf/config.json
 log/*
+
+.idea

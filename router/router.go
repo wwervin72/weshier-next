@@ -2,6 +2,7 @@ package router
 
 import (
 	"fmt"
+	"weshierNext/handler/article"
 	"weshierNext/handler/page"
 	"weshierNext/handler/sd"
 	"weshierNext/handler/user"
@@ -29,7 +30,6 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 
 	api := g.Group("/api")
 	{
-		// 健康检查
 		svcd := api.Group("/sd")
 		{
 			svcd.GET("/health", sd.HealthCheck)
@@ -43,7 +43,14 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 			// github login
 			userGroup.GET("/auth/github/callback", user.GithubLogin)
 			userGroup.POST("/login", user.Login)
+			userGroup.GET("/logout", user.Logout)
 			userGroup.POST("/register", user.Register)
+		}
+		articleGroup := api.Group("/article")
+		{
+			articleGroup.POST("", article.Create)
+			articleGroup.GET("/detail/:articleId", article.QueryArticleDetailByID)
+			articleGroup.GET("/list", article.QueryArticleList)
 		}
 	}
 	return g
