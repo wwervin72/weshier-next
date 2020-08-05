@@ -20,4 +20,5 @@ var (
 	ErrTokenInvalid      = &Errno{Code: 20103, Message: "token 错误"}
 	ErrTokenExpired      = &Errno{Code: 20104, Message: "token 已过期"}
 	ErrPasswordIncorrect = &Errno{Code: 20105, Message: "密码不正确"}
+	ErrNoPermission = &Errno{Code: 20403, Message: "当前账号不能进行此操作"}
 )

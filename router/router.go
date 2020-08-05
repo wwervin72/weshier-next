@@ -43,12 +43,12 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 			// github login
 			userGroup.GET("/auth/github/callback", user.GithubLogin)
 			userGroup.POST("/login", user.Login)
-			userGroup.GET("/logout", user.Logout)
+			userGroup.GET("/logout", middleware.LoginRequired, user.Logout)
 			userGroup.POST("/register", user.Register)
 		}
 		articleGroup := api.Group("/article")
 		{
-			articleGroup.POST("", article.Create)
+			articleGroup.POST("", middleware.LoginRequired, article.Create)
 			articleGroup.GET("/detail/:articleId", article.QueryArticleDetailByID)
 			articleGroup.GET("/list", article.QueryArticleList)
 		}
